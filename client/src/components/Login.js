@@ -1,13 +1,27 @@
-import React, { useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { createRoom } from "../redux/slices/roomSlice";
+import { isEmpty } from "lodash";
+import { useNavigate } from "react-router-dom";
+import { socket } from "../socket";
 
 const Login = () => {
   const playerNameRef = useRef(null);
+  const room = useSelector((state) => state.room);
+  const navigate = useNavigate();
   const [error, setError] = useState({
     playerName: "",
     roomId: "",
   });
+
+  useEffect(() => {
+    if (!isEmpty(room.id)) {
+      console.log("here");
+      socket.connect();
+      navigate(`/room/${room.id}`);
+    }
+  }, [room.id, navigate]);
+
   const dispatch = useDispatch();
   const handlePlay = () => {
     const playerName = playerNameRef.current.value;
